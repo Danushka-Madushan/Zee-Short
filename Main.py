@@ -266,6 +266,10 @@ while True:
                         continue
 
                 CUTTLY_TOKEN = input("$ Enter API TOKEN : ")
+                if CUTTLY_TOKEN == "":
+                    print("\n$ No TOKEN Provided...")
+                    time.sleep(1.5)
+                    break
                 letters = string.ascii_lowercase
                 result_str = ''.join(random.choice(letters)
                                      for i in range(5))
@@ -305,6 +309,10 @@ while True:
                             json.dump(BASE, outfile, indent=2)
                         continue
                 BITLY_TOKEN = input("$ Enter API TOKEN : ")
+                if BITLY_TOKEN == "":
+                    print("\n$ No TOKEN Provided...")
+                    time.sleep(1.5)
+                    break
                 letters = string.ascii_lowercase
                 result_str = ''.join(random.choice(letters)
                                      for i in range(5))
