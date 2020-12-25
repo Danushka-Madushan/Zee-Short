@@ -116,6 +116,8 @@ while True:
                         'Content-Type': 'application/json',
                     }
                     URL = input("$ Enter Long URL : ")
+                    if URL == "":
+                        break
 
                     data = '{ "long_url": "'+URL+'", "domain": "bit.ly"}'
 
@@ -184,6 +186,9 @@ while True:
                         pass
 
                     URL = input("\n$ Enter Long URL : ")
+                    if URL == "":
+                        break
+                        
                     api_url = f"https://cutt.ly/api/api.php?key={TOKEN}&short={URL}"
                     data = requests.get(api_url).json()["url"]
                     try:
