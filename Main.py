@@ -31,6 +31,8 @@ else:
     Pause()
     sys.exit()
 
+os.system("COLOR A")
+
 Banner = r'''
 (01) Bit.ly URL Shortener
         $ Best for Download Links
@@ -188,7 +190,7 @@ while True:
                     URL = input("\n$ Enter Long URL : ")
                     if URL == "":
                         break
-                        
+
                     api_url = f"https://cutt.ly/api/api.php?key={TOKEN}&short={URL}"
                     data = requests.get(api_url).json()["url"]
                     try:
@@ -239,7 +241,10 @@ while True:
                         Pause()
                         Clear()
                         continue
-
+            else:
+                print("$ Connection Faild...")
+                Pause()
+                Clear()
         except KeyboardInterrupt:
             print("$ You Terminated the Programm..")
             sys.exit()
@@ -254,110 +259,127 @@ while True:
                 Clear()
                 continue
         if X == 1:
-            while True:
-                print("\n\n$ Cutt.ly API TOKEN\n")
+            if Net_Status() == True:
                 while True:
-                    try:
-                        DATA = open("Database.json", "r")
-                        json_object = json.load(DATA)
-                        break
-                    except Exception:
-                        BASE = {
-                            "BITLY_TOKEN": "",
-                            "CUTTLY_TOKEN": ""
-                        }
-                        with open("Database.json", "w") as outfile:
-                            json.dump(BASE, outfile, indent=2)
-                        continue
+                    print("\n\n$ Cutt.ly API TOKEN\n")
+                    while True:
+                        try:
+                            DATA = open("Database.json", "r")
+                            json_object = json.load(DATA)
+                            break
+                        except Exception:
+                            BASE = {
+                                "BITLY_TOKEN": "",
+                                "CUTTLY_TOKEN": ""
+                            }
+                            with open("Database.json", "w") as outfile:
+                                json.dump(BASE, outfile, indent=2)
+                            continue
 
-                CUTTLY_TOKEN = input("$ Enter API TOKEN : ")
-                if CUTTLY_TOKEN == "":
-                    print("\n$ No TOKEN Provided...")
-                    time.sleep(1.5)
-                    break
-                letters = string.ascii_lowercase
-                result_str = ''.join(random.choice(letters)
-                                     for i in range(5))
-                URL = ("https://www.google.com/search?q=" + result_str)
-                api_url = f"https://cutt.ly/api/api.php?key={CUTTLY_TOKEN}&short={URL}"
-                data = requests.get(api_url).json()["url"]
-                if data["status"] == 7:
-                    json_object["CUTTLY_TOKEN"] = CUTTLY_TOKEN
-                    a_file = open("Database.json", "w")
-                    json.dump(json_object, a_file, indent=2)
-                    a_file.close()
-                    print("\n$ TOKEN Updated..")
+                    CUTTLY_TOKEN = input("$ Enter API TOKEN : ")
+                    if CUTTLY_TOKEN == "":
+                        print("\n$ No TOKEN Provided...")
+                        time.sleep(1.5)
+                        break
+                    letters = string.ascii_lowercase
+                    result_str = ''.join(random.choice(letters)
+                                         for i in range(5))
+                    URL = ("https://www.google.com/search?q=" + result_str)
+                    api_url = f"https://cutt.ly/api/api.php?key={CUTTLY_TOKEN}&short={URL}"
+                    data = requests.get(api_url).json()["url"]
+                    if data["status"] == 7:
+                        json_object["CUTTLY_TOKEN"] = CUTTLY_TOKEN
+                        a_file = open("Database.json", "w")
+                        json.dump(json_object, a_file, indent=2)
+                        a_file.close()
+                        print("\n$ TOKEN Updated..")
+                        Pause()
+                        Clear()
+                        break
+                    else:
+                        print("\n$ Invalid API TOKEN..!")
+                        Pause()
+                        Clear()
+                        continue
                     Pause()
                     Clear()
-                    break
-                else:
-                    print("\n$ Invalid API TOKEN..!")
-                    Pause()
-                    Clear()
-                    continue
+            else:
+                print("$ Connection Faild...")
                 Pause()
                 Clear()
         if X == 2:
-            while True:
-                print("\n\n$ Bit.ly API TOKEN\n")
+            if Net_Status() == True:
                 while True:
+                    print("\n\n$ Bit.ly API TOKEN\n")
+                    while True:
+                        try:
+                            DATA = open("Database.json", "r")
+                            json_object = json.load(DATA)
+                            break
+                        except Exception:
+                            BASE = {
+                                "BITLY_TOKEN": "",
+                                "CUTTLY_TOKEN": ""
+                            }
+                            with open("Database.json", "w") as outfile:
+                                json.dump(BASE, outfile, indent=2)
+                            continue
+                    BITLY_TOKEN = input("$ Enter API TOKEN : ")
+                    if BITLY_TOKEN == "":
+                        print("\n$ No TOKEN Provided...")
+                        time.sleep(1.5)
+                        break
+                    letters = string.ascii_lowercase
+                    result_str = ''.join(random.choice(letters)
+                                         for i in range(5))
+                    headers = {
+                        'Authorization': f'Bearer {BITLY_TOKEN}',
+                        'Content-Type': 'application/json',
+                    }
+                    URL = ("https://www.google.com/search?q=" + result_str)
+                    data = '{ "long_url": "'+URL+'", "domain": "bit.ly"}'
+                    response = requests.post(
+                        'https://api-ssl.bitly.com/v4/shorten', headers=headers, data=data).json()
                     try:
-                        DATA = open("Database.json", "r")
-                        json_object = json.load(DATA)
+                        response['link'] == True
+                        json_object["BITLY_TOKEN"] = BITLY_TOKEN
+                        a_file = open("Database.json", "w")
+                        json.dump(json_object, a_file, indent=2)
+                        a_file.close()
+                        print("\n$ TOKEN Updated..")
+                        Pause()
+                        Clear()
                         break
                     except Exception:
-                        BASE = {
-                            "BITLY_TOKEN": "",
-                            "CUTTLY_TOKEN": ""
-                        }
-                        with open("Database.json", "w") as outfile:
-                            json.dump(BASE, outfile, indent=2)
+                        print("\n$ Invalid API TOKEN..!")
+                        Pause()
+                        Clear()
                         continue
-                BITLY_TOKEN = input("$ Enter API TOKEN : ")
-                if BITLY_TOKEN == "":
-                    print("\n$ No TOKEN Provided...")
-                    time.sleep(1.5)
-                    break
-                letters = string.ascii_lowercase
-                result_str = ''.join(random.choice(letters)
-                                     for i in range(5))
-                headers = {
-                    'Authorization': f'Bearer {BITLY_TOKEN}',
-                    'Content-Type': 'application/json',
-                }
-                URL = ("https://www.google.com/search?q=" + result_str)
-                data = '{ "long_url": "'+URL+'", "domain": "bit.ly"}'
-                response = requests.post(
-                    'https://api-ssl.bitly.com/v4/shorten', headers=headers, data=data).json()
-                try:
-                    response['link'] == True
-                    json_object["BITLY_TOKEN"] = BITLY_TOKEN
-                    a_file = open("Database.json", "w")
-                    json.dump(json_object, a_file, indent=2)
-                    a_file.close()
-                    print("\n$ TOKEN Updated..")
                     Pause()
                     Clear()
-                    break
-                except Exception:
-                    print("\n$ Invalid API TOKEN..!")
-                    Pause()
-                    Clear()
-                    continue
+            else:
+                print("$ Connection Faild...")
                 Pause()
                 Clear()
         if X == 3:
             while True:
-                BASE = {
-                    "BITLY_TOKEN": "",
-                    "CUTTLY_TOKEN": ""
-                }
-                with open("Database.json", "w") as outfile:
-                    json.dump(BASE, outfile, indent=2)
-                print("$ Document Created..")
-                Pause()
-                Clear()
-                break
+                try:
+                    DATA = open("Database.json", "r")
+                    json_object = json.load(DATA)
+                    print("\n$ Document Already Created..")
+                    Pause()
+                    break
+                except Exception:
+                    BASE = {
+                        "BITLY_TOKEN": "",
+                        "CUTTLY_TOKEN": ""
+                    }
+                    with open("Database.json", "w") as outfile:
+                        json.dump(BASE, outfile, indent=2)
+                    print("\n$ Document Created..")
+                    Pause()
+                    Clear()
+                    break
         if X == 4:
             Clear()
             continue
