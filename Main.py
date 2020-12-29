@@ -1,4 +1,5 @@
 import requests
+import pyperclip
 import msvcrt
 import json
 import random
@@ -10,6 +11,10 @@ import time
 
 def Pause():
     msvcrt.getch()
+
+
+def Clip(clipdata):
+    pyperclip.copy(clipdata)
 
 
 def Clear():
@@ -126,12 +131,14 @@ while True:
                     response = requests.post(
                         'https://api-ssl.bitly.com/v4/shorten', headers=headers, data=data).json()
                     try:
+                        Clip(response['link'])
                         print("\n\n$ Shorted Url  : ", response['link'])
                         print("$ Created Date : ",
                               response['created_at'], "\n\n")
+                        print("      > URL COPIED TO CLIPBOARD < ")
                         Pause()
                         Clear()
-                        break
+                        continue
                     except Exception:
                         print("\n\n$ Error Shortening the Given URL..!")
                         print(
@@ -196,43 +203,45 @@ while True:
                     try:
                         if data["status"] == 7:
                             shortened_url = data["shortLink"]
+                            Clip(shortened_url)
                             print("\n\n$ Shorted Url  :", shortened_url)
                             print("$ Created Date :",
                                   data["date"], "\n\n")
+                            print("      > URL COPIED TO CLIPBOARD < ")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 6:
                             print("$ The link provided is from a blocked domain")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 5:
                             print(
                                 "$ The link has not passed the validation. Includes invalid characters")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 4:
                             print("$ Invalid API key")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 3:
                             print("$ The preferred link name is already taken")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 2:
                             print("$ The entered link is not a link")
                             Pause()
                             Clear()
-                            break
+                            continue
                         if data["status"] == 1:
                             print("$ The link has already been shortened")
                             Pause()
                             Clear()
-                            break
+                            continue
                     except Exception:
                         print("\n\n$ Error Shortening the Given URL..!")
                         print(
