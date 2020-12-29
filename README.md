@@ -13,6 +13,7 @@
 
 # Dependencies
 > • pip install requests
+
 > • pip install pyperclip
 
 # Functions
