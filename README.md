@@ -13,11 +13,14 @@
 
 # Dependencies
 > • pip install requests
+> • pip install pyperclip
 
 # Functions
 > You Can Short Any Link Easily
 
 > You Can get You Link as Cuttlink of Bitlink
+
+> Shorted Link automatically Copy to Clipboard > Past Anywhere <
 
 > More Stable
 
