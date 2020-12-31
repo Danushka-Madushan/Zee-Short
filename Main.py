@@ -2,11 +2,122 @@ import requests
 import pyperclip
 import msvcrt
 import json
+import csv
 import random
 import string
 import os
 import sys
 import time
+from mechanize import Browser
+
+BR = Browser()
+BR.set_handle_robots(False)
+
+Path = os.getenv('APPDATA')
+
+BASE_LIBRARY = []
+
+
+def View_Records_Bitly():
+    while True:
+        Content = ""
+        try:
+            with open(f"{Path}/Library_B.json") as json_file:
+                for line in json_file.read():
+                    Content += line
+        except Exception:
+            print("$ There is no Data to View....")
+            break
+
+        Content = json.loads(Content)
+
+        with open("Shorted-Data-Bitly.csv", "w") as f:
+            writer = csv.DictWriter(f, Content[0].keys())
+            writer.writeheader()
+
+            for x in Content:
+                writer.writerow(x)
+        print("$ All Records Saved to CSV Document..")
+        break
+
+
+def View_Records_Cuttly():
+    while True:
+        Content = ""
+        try:
+            with open(f"{Path}/Library_C.json") as json_file:
+                for line in json_file.read():
+                    Content += line
+        except Exception:
+            print("$ There is no Data to View....")
+            break
+
+        Content = json.loads(Content)
+
+        with open("Shorted-Data-Cuttly.csv", "w") as f:
+            writer = csv.DictWriter(f, Content[0].keys())
+            writer.writeheader()
+
+            for x in Content:
+                writer.writerow(x)
+        print("$ All Records Saved to CSV Document..")
+        break
+
+
+def Add_data_Bitly():
+
+    URL_LIBRARY = {}
+    while True:
+        try:
+            with open(f"{Path}/Library_B.json", 'r') as f:
+                DATA = json.load(f)
+                break
+        except Exception:
+            with open(f"{Path}/Library_B.json", "w") as outfile:
+                json.dump(BASE_LIBRARY, outfile, indent=4)
+                continue
+
+    URL_LIBRARY['DATE'] = response['created_at']
+    URL_LIBRARY['URL'] = response['link']
+    URL_LIBRARY['LONG_URL'] = response['long_url']
+    try:
+        BR.open(response['long_url'])
+        Title = BR.title()
+    except Exception:
+        Title = "Download Link?"
+    URL_LIBRARY['Title'] = Title
+
+    DATA.append(URL_LIBRARY)
+    with open(f"{Path}/Library_B.json", 'w') as f:
+        json.dump(DATA, f, indent=4)
+
+
+def Add_data_Cuttly():
+
+    URL_LIBRARY = {}
+    while True:
+        try:
+            with open(f"{Path}/Library_C.json", 'r') as f:
+                DATA = json.load(f)
+                break
+        except Exception:
+            with open(f"{Path}/Library_C.json", "w") as outfile:
+                json.dump(BASE_LIBRARY, outfile, indent=4)
+                continue
+
+    URL_LIBRARY['DATE'] = data["date"]
+    URL_LIBRARY['URL'] = data["shortLink"]
+    URL_LIBRARY['LONG_URL'] = data["fullLink"]
+    try:
+        BR.open(data["fullLink"])
+        Title = BR.title()
+    except Exception:
+        Title = "Download Link?"
+    URL_LIBRARY['Title'] = Title
+
+    DATA.append(URL_LIBRARY)
+    with open(f"{Path}/Library_C.json", 'w') as f:
+        json.dump(DATA, f, indent=4)
 
 
 def Pause():
@@ -50,11 +161,14 @@ Banner = r'''
 (03) API Management Section
         $ Add/Manage API-TOKEN
 
-(04) How to USE\?
+(04) History
+        $ Save History as SpreadSheet
+
+(05) How to USE\?
         $ How to Get My API-TOKEN
         $ How to USE This Programe
 
-(05) Exit
+(06) Exit
 
 >> Enter Your Choice : '''
 
@@ -66,6 +180,17 @@ Banner2 = r'''
 (03) Make [ Database.json ] Document
 
 (04) Main Menu
+
+>> Enter Your Choice : '''
+
+Banner3 = r'''
+(01) Save Previous Bitly Shortening Hostory
+        $ File Type : CSV [SPREADSHEET]
+
+(02) Save Previous Cuttly Shortening Hostory
+        $ File Type : CSV [SPREADSHEET]
+
+(03) Main Menu
 
 >> Enter Your Choice : '''
 
@@ -136,6 +261,8 @@ while True:
                         print("$ Created Date : ",
                               response['created_at'], "\n\n")
                         print("      > URL COPIED TO CLIPBOARD < ")
+                        Add_data_Bitly()
+                        print("      >    RECORD UPDATED :)    < ")
                         Pause()
                         Clear()
                         continue
@@ -208,6 +335,8 @@ while True:
                             print("$ Created Date :",
                                   data["date"], "\n\n")
                             print("      > URL COPIED TO CLIPBOARD < ")
+                            Add_data_Cuttly()
+                            print("      >    RECORD UPDATED :)    < ")
                             Pause()
                             Clear()
                             continue
@@ -394,6 +523,26 @@ while True:
             continue
     if User_Choice == 4:
         Clear()
+        while True:
+            try:
+                X = int(input(Banner3))
+                break
+            except ValueError:
+                Clear()
+                continue
+
+        if X == 1:
+            print("$ Working....")
+            View_Records_Bitly()
+            Pause()
+        if X == 2:
+            print("$ Working....")
+            View_Records_Cuttly()
+            Pause()
+        if X == 3:
+            Clear()
+    if User_Choice == 5:
+        Clear()
         print('''
         $ How to Get Your Unique API-TOKEN..?
         
@@ -413,7 +562,7 @@ while True:
             >> Enter TOKEN Via API Management Section''')
         Pause()
         Clear()
-    if User_Choice == 5:
+    if User_Choice == 6:
         print("$ Press Anything for Exit...!")
         Pause()
         sys.exit()
