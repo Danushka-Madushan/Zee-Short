@@ -12,9 +12,7 @@
 > • Cutt.y API from Here [Cutt.ly](https://cutt.ly)
 
 # Dependencies
-> • pip install requests
-
-> • pip install pyperclip
+> pip install -r requirements.txt
 
 # Functions
 > You Can Short Any Link Easily
@@ -22,6 +20,8 @@
 > You Can get You Link as Cuttlink of Bitlink
 
 > Shorted Link automatically Copy to Clipboard > Past Anywhere <
+
+> Link Shorting History Added (New)
 
 > More Stable
 
