@@ -1,21 +1,89 @@
-import requests
+import mechanize
 import pyperclip
-import msvcrt
-import json
-import csv
+import requests
 import random
 import string
-import os
-import sys
+import msvcrt
 import time
-from mechanize import Browser
+import json
+import sys
+import csv
+import io
+import os
 
-BR = Browser()
+BR = mechanize.Browser()
 BR.set_handle_robots(False)
+BR.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
 
 Path = os.getenv('APPDATA')
 
 BASE_LIBRARY = []
+
+def Checker(VARIABLE):
+    try:
+        while True:
+            try:
+                BR.open(VARIABLE, timeout=5)
+                return True
+                break
+            except Exception as e:
+                break
+                            
+    except:
+        return False
+
+
+def Add_Record_Bitly(response):
+
+    URL_LIBRARY = {}
+    while True:
+        try:
+            with open(f"{Path}/Library_B.json", 'r') as f:
+                DATA = json.load(f)
+                break
+        except Exception:
+            with open(f"{Path}/Library_B.json", "w") as outfile:
+                json.dump(BASE_LIBRARY, outfile, indent=4)
+                continue
+
+    URL_LIBRARY['DATE'] = response['created_at']
+    URL_LIBRARY['URL'] = response['link']
+    URL_LIBRARY['LONG_URL'] = response['long_url']
+    if Checker(response['long_url']) == True:
+        try:
+            BR.open(response['long_url']) 
+            URL_LIBRARY['Title'] = BR.title()
+        except Exception:
+            URL_LIBRARY['Title'] = ("$ Download Link?")
+    else:
+        URL_LIBRARY['Title'] = ("$ Download Link or Invalid Link")
+
+    DATA.append(URL_LIBRARY)
+    with open(f"{Path}/Library_B.json", 'w') as f:
+        json.dump(DATA, f, indent=4)
+
+
+def Add_Record_Cuttly(data):
+
+    URL_LIBRARY_2 = {}
+    while True:
+        try:
+            with open(f"{Path}/Library_C.json", 'r') as f:
+                DATA = json.load(f)
+                break
+        except Exception:
+            with open(f"{Path}/Library_C.json", "w") as outfile:
+                json.dump(BASE_LIBRARY, outfile, indent=4)
+                continue
+
+    URL_LIBRARY_2['DATE'] = data["date"]
+    URL_LIBRARY_2['URL'] = data["shortLink"]
+    URL_LIBRARY_2['LONG_URL'] = data["fullLink"]
+    URL_LIBRARY_2['Title'] = data["title"]
+
+    DATA.append(URL_LIBRARY_2)
+    with open(f"{Path}/Library_C.json", 'w') as f:
+        json.dump(DATA, f, indent=4)
 
 
 def View_Records_Bitly():
@@ -31,7 +99,7 @@ def View_Records_Bitly():
 
         Content = json.loads(Content)
 
-        with open("Shorted-Data-Bitly.csv", "w") as f:
+        with io.open("Shorted-Data-Bitly.csv", "w", encoding="utf-8") as f:
             writer = csv.DictWriter(f, Content[0].keys())
             writer.writeheader()
 
@@ -54,7 +122,7 @@ def View_Records_Cuttly():
 
         Content = json.loads(Content)
 
-        with open("Shorted-Data-Cuttly.csv", "w") as f:
+        with io.open("Shorted-Data-Cuttly.csv", "w", encoding="utf-8") as f:
             writer = csv.DictWriter(f, Content[0].keys())
             writer.writeheader()
 
@@ -80,12 +148,14 @@ def Add_data_Bitly():
     URL_LIBRARY['DATE'] = response['created_at']
     URL_LIBRARY['URL'] = response['link']
     URL_LIBRARY['LONG_URL'] = response['long_url']
-    try:
-        BR.open(response['long_url'])
-        Title = BR.title()
-    except Exception:
-        Title = "Download Link?"
-    URL_LIBRARY['Title'] = Title
+    if Checker(response['long_url']) == True:
+        try:
+            BR.open(response['long_url'])
+            URL_LIBRARY['Title'] = BR.title()
+        except Exception:
+            URL_LIBRARY['Title'] = ("$ Download Link?")
+    else:
+        URL_LIBRARY['Title'] = ("$ Download Link or Invalid Link")
 
     DATA.append(URL_LIBRARY)
     with open(f"{Path}/Library_B.json", 'w') as f:
@@ -108,12 +178,7 @@ def Add_data_Cuttly():
     URL_LIBRARY['DATE'] = data["date"]
     URL_LIBRARY['URL'] = data["shortLink"]
     URL_LIBRARY['LONG_URL'] = data["fullLink"]
-    try:
-        BR.open(data["fullLink"])
-        Title = BR.title()
-    except Exception:
-        Title = "Download Link?"
-    URL_LIBRARY['Title'] = Title
+    URL_LIBRARY['Title'] = data['title']
 
     DATA.append(URL_LIBRARY)
     with open(f"{Path}/Library_C.json", 'w') as f:
@@ -158,24 +223,28 @@ Banner = r'''
         $ Best for URL Sharing
         $ Links Management Avilable in the Cutt.ly Dashbourd
 
-(03) API Management Section
+(03) Short Several links at once
+        $ For Shorting Multiple Links at Same Time 
+
+(04) API Management Section
         $ Add/Manage API-TOKEN
 
-(04) History
+(05) History
         $ Save History as SpreadSheet
 
-(05) How to USE\?
+(06) How to USE?
         $ How to Get My API-TOKEN
-        $ How to USE This Programe
 
-(06) Exit
+(07) Exit
 
 >> Enter Your Choice : '''
 
 Banner2 = r'''
-(01) Cutt.ly API-TOKEN 
+$ API-TOKEN Management Section....
 
-(02) Bit.ly API-TOKEN
+(01) Bit.ly API-TOKEN 
+
+(02) Cutt.ly API-TOKEN
 
 (03) Make [ Database.json ] Document
 
@@ -184,15 +253,25 @@ Banner2 = r'''
 >> Enter Your Choice : '''
 
 Banner3 = r'''
-(01) Save Previous Bitly Shortening Hostory
+(01) Save Previous Bitly Shortening History
         $ File Type : CSV [SPREADSHEET]
 
-(02) Save Previous Cuttly Shortening Hostory
+(02) Save Previous Cuttly Shortening History
         $ File Type : CSV [SPREADSHEET]
 
 (03) Main Menu
 
 >> Enter Your Choice : '''
+
+Banner4 = r'''
+(01) Short Multiple Links at Once | Bit.ly
+
+(02) Short Multiple Links at Once | Cutt.ly
+
+(03) Main Menu
+
+>> Enter Your Choice : '''
+
 
 while True:
     while True:
@@ -229,14 +308,14 @@ while True:
 
                     except Exception:
                         print("$ Your API-TOKEN is Empty..!")
-                        print("$ Got to API Management Section...")
+                        print("$ Manage it Via API Management Section...")
                         Pause()
                         Clear()
                         break
 
                     if TOKEN == "":
                         print("$ Your API Token is Invalid...!")
-                        print("$ Got to API Management Section...")
+                        print("$ Manage it Via API Management Section...")
                         Pause()
                         Clear()
                         break
@@ -266,7 +345,8 @@ while True:
                         Pause()
                         Clear()
                         continue
-                    except Exception:
+                    except Exception as x:
+                        print(x)
                         print("\n\n$ Error Shortening the Given URL..!")
                         print(
                             '$ Possible Ressons : $ The URL You Provided is not an URL')
@@ -307,14 +387,14 @@ while True:
 
                     except Exception:
                         print("$ Your API-TOKEN is Empty..!")
-                        print("$ Got to API Management Section...")
+                        print("$ Manage it Via API Management Section...")
                         Pause()
                         Clear()
                         break
 
                     if TOKEN == "":
                         print("$ Your API Token is Invalid...!")
-                        print("$ Got to API Management Section...")
+                        print("$ Manage it Via API Management Section...")
                         Pause()
                         Clear()
                         break
@@ -387,8 +467,194 @@ while True:
             print("$ You Terminated the Programm..")
             sys.exit()
     if User_Choice == 3:
+        try:
+            if Net_Status() == True:
+                while True:
+                    Clear()
+                    while True:
+                        try:
+                            VAR_X = input(Banner4)
+                            if VAR_X == "":
+                                clear()
+                                continue
+                            else:
+                                break
+                        except Exception:
+                            Clear()
+                            continue
+                    if VAR_X == str(1):
+                        Clear()
+                        try:
+                            if Net_Status() == True:
+                                while True:
+                                    while True:
+                                        try:
+                                            with open("Database.json", "r") as TOKENFILE:
+                                                TOKEN_DATA = json.load(TOKENFILE)
+                                                break
+                                        except Exception:
+                                            BASE = {
+                                                "BITLY_TOKEN": "",
+                                                "CUTTLY_TOKEN": ""
+                                            }
+                                            with open("Database.json", "w") as outfile:
+                                                json.dump(BASE, outfile, indent=2)
+                                                continue
+                                    try:
+                                        TOKEN = TOKEN_DATA["BITLY_TOKEN"]
+                                        pass
+
+                                    except Exception:
+                                        print("$ Your API-TOKEN is Empty..!")
+                                        print("$ Manage it Via API Management Section...")
+                                        Pause()
+                                        Clear()
+                                        break
+
+                                    if TOKEN == "":
+                                        print("$ Your API Token is Invalid...!")
+                                        print("$ Manage it Via API Management Section...")
+                                        Pause()
+                                        Clear()
+                                        break
+                                    else:
+                                        pass
+                                    
+                                    headers = {
+                                        'Authorization': f'Bearer {TOKEN}',
+                                        'Content-Type': 'application/json',
+                                    }
+                                    LST = []
+                                    J = 1
+                                    N = 1
+                                    print("$ Leave Blank for Proceed... \n")
+                                    while True:
+                                        Data = input(f"$ Provide URL #{J}  : ")
+                                        if Data == "":
+                                            print("\n")
+                                            break
+                                        LST.append(Data)
+                                        J = J+1
+                                        continue
+                                    for x in LST:
+                                        URL = x
+                                        data = '{ "long_url": "'+URL+'", "domain": "bit.ly"}'
+                                        response = requests.post(
+                                            'https://api-ssl.bitly.com/v4/shorten', headers=headers, data=data).json()
+                                        try:
+                                            print(f"$ Link Number  : #{N}")
+                                            print("$ Shorted URL  :", response['link'])
+                                            print("$ Shorted Date :", response['created_at'])
+                                            print("\n")
+                                            Add_Record_Bitly(response)
+                                        except Exception:
+                                            print(f"$ Link Number  : Cannot be Generated..")
+                                            print("\n")
+                                        N = N+1
+                                    print("      >    RECORDS UPDATED :)    < ")
+                                    print("      >    ..PRESS ANY KEY..     < ")
+                                    Pause()
+                                    Clear()
+                                    break
+
+                            else:
+                                print("$ Connection Faild...")
+                                Pause()
+                                Clear()
+                        except Exception:
+                            print("$ Please Check Your internet Connection")
+                            Pause()
+                    if VAR_X == str(2):
+                        Clear()
+                        try:
+                            if Net_Status() == True:
+                                while True:
+                                    while True:
+                                        try:
+                                            with open("Database.json", "r") as TOKENFILE:
+                                                TOKEN_DATA = json.load(TOKENFILE)
+                                                break
+                                        except Exception:
+                                            BASE = {
+                                                "BITLY_TOKEN": "",
+                                                "CUTTLY_TOKEN": ""
+                                            }
+                                            with open("Database.json", "w") as outfile:
+                                                json.dump(BASE, outfile, indent=2)
+                                                continue
+                                    try:
+                                        TOKEN = TOKEN_DATA["CUTTLY_TOKEN"]
+                                        pass
+
+                                    except Exception:
+                                        print("$ Your API-TOKEN is Empty..!")
+                                        print("$ Manage it Via API Management Section...")
+                                        Pause()
+                                        Clear()
+                                        break
+
+                                    if TOKEN == "":
+                                        print("$ Your API Token is Invalid...!")
+                                        print("$ Manage it Via API Management Section...")
+                                        Pause()
+                                        Clear()
+                                        break
+                                    else:
+                                        pass
+                                    
+                                    KEY = TOKEN_DATA["CUTTLY_TOKEN"]
+
+                                    LST_2 = []
+                                    O = 1
+                                    F = 1
+                                    print("$ Leave Blank for Proceed... \n")
+                                    while True:
+                                        Data = input(f"$ Provide URL #{O}  : ")
+                                        if Data == "":
+                                            print("\n")
+                                            break
+                                        LST_2.append(Data)
+                                        O = O+1
+                                        continue
+                                    for x in LST_2:
+                                        URL_2 = x
+                                        payload = {'key': ''+KEY+'', 'short': ''+URL_2+''}
+                                        data = requests.get('https://cutt.ly/api/api.php', payload).json()["url"]
+                                        if data['status'] == 7:
+                                            print(f"$ Link Number  : #{F}")
+                                            print("$ Shorted URL  :", data["shortLink"])
+                                            print("$ Shorted Date :", data["date"])
+                                            print("\n")
+                                            Add_Record_Cuttly(data)
+                                        else:
+                                            print(f"$ Link Number  : Cannot be Generated..")
+                                            print("\n")
+                                        F = F+1
+                                    print("      >    RECORDS UPDATED :)    < ")
+                                    print("      >    ..PRESS ANY KEY..     < ")
+                                    Pause()
+                                    Clear()
+                                    break
+
+                            else:
+                                print("$ Connection Faild...")
+                                Pause()
+                                Clear()
+                        except Exception:
+                            print("$ Please Check Your internet Connection")
+                            Pause()
+                    if VAR_X == str(3):
+                        break
+
+            else:
+                print("$ Connection Faild...")
+                Pause()
+                Clear()
+        except KeyboardInterrupt:
+            print("$ You Terminated the Programm..")
+            sys.exit()
+    if User_Choice == 4:
         Clear()
-        print("$ API-TOKEN Management Section....")
         while True:
             try:
                 X = int(input(Banner2))
@@ -396,7 +662,7 @@ while True:
             except ValueError:
                 Clear()
                 continue
-        if X == 1:
+        if X == 2:
             if Net_Status() == True:
                 while True:
                     print("\n\n$ Cutt.ly API TOKEN\n")
@@ -414,6 +680,11 @@ while True:
                                 json.dump(BASE, outfile, indent=2)
                             continue
 
+                    if json_object["CUTTLY_TOKEN"] == "":
+                        print("$ Your Currunt API-TOKEN : Empty")
+                    else:
+                        print("$ Your Currunt API-TOKEN : " + json_object["CUTTLY_TOKEN"])
+                    print("\n")
                     CUTTLY_TOKEN = input("$ Enter API TOKEN : ")
                     if CUTTLY_TOKEN == "":
                         print("\n$ No TOKEN Provided...")
@@ -445,7 +716,7 @@ while True:
                 print("$ Connection Faild...")
                 Pause()
                 Clear()
-        if X == 2:
+        if X == 1:
             if Net_Status() == True:
                 while True:
                     print("\n\n$ Bit.ly API TOKEN\n")
@@ -462,6 +733,11 @@ while True:
                             with open("Database.json", "w") as outfile:
                                 json.dump(BASE, outfile, indent=2)
                             continue
+                    if json_object["CUTTLY_TOKEN"] == "":
+                        print("$ Your Currunt API-TOKEN : Empty")
+                    else:
+                        print("$ Your Currunt API-TOKEN : " + json_object["BITLY_TOKEN"])
+                    print("\n")
                     BITLY_TOKEN = input("$ Enter API TOKEN : ")
                     if BITLY_TOKEN == "":
                         print("\n$ No TOKEN Provided...")
@@ -521,7 +797,7 @@ while True:
         if X == 4:
             Clear()
             continue
-    if User_Choice == 4:
+    if User_Choice == 5:
         Clear()
         while True:
             try:
@@ -541,7 +817,7 @@ while True:
             Pause()
         if X == 3:
             Clear()
-    if User_Choice == 5:
+    if User_Choice == 6:
         Clear()
         print('''
         $ How to Get Your Unique API-TOKEN..?
@@ -562,9 +838,10 @@ while True:
             >> Enter TOKEN Via API Management Section''')
         Pause()
         Clear()
-    if User_Choice == 6:
+    if User_Choice == 7:
         print("$ Press Anything for Exit...!")
         Pause()
+        Clear()
         sys.exit()
     else:
         Clear()
