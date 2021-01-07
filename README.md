@@ -17,14 +17,16 @@
 # Functions
 > You Can Short Any Link Easily
 
-> You Can get You Link as Cuttlink of Bitlink
+> You Can get You Link as a Cuttlink or a Bitlink
 
 > Shorted Link automatically Copy to Clipboard > Past Anywhere <
 
+> Now You Can Short Multiple URLs at Same Time (New - Avilable as option)
+
 > Link Shorting History Added (New)
 
-> More Stable
+> More Stable (Fixed Some Minor Bugs and Improved Interface)
 
-> Fast error Avoiding
+> Fast error Avoiding (Improved)
 
-> You have to Give your Api firsdt time Ony it Save it Locally
+> You have to Give your Api first time Ony it Saves it Locally
