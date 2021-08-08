@@ -1,5 +1,5 @@
 # _Zee-Short_ URL Shortener 
-![GitHub Logo](https://tetranoodle.com/wp-content/uploads/2018/07/tick-gif.gif)
+![GitHub Logo](https://thumbs.gfycat.com/ShyCautiousAfricanpiedkingfisher-max-1mb.gif)
 > ## Version 1.00.1
 > • Powerful URL Shortener Maded by Python Convert any link to Bit.ly link or Cutt.ly Link
 
